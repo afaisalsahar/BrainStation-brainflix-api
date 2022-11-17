@@ -2,6 +2,9 @@
 require('dotenv').config();
 const {PORT, API_URL} = process.env;
 
+// load unique ID generator 
+const {v4: uuid} = require('uuid');
+
 // load api dependencies
 const express = require('express'); // express server
 const router = express.Router(); // express router
@@ -30,7 +33,34 @@ router
             }
         })
 
-        return res.status(200).json(videos);
+        res.status(200).json(videos); // 200 HTTP OK
+    })
+    .post((req, res) => { // handle POST request to /videos
+        const videos = getVideos();
+        // create a new video object - hardcode required fields
+        const newVideo = { 
+            id: uuid(), // generate unique ID
+            title: req.body.title, // get video title from upload form
+            channel: 'Always Blue',
+            image: '/images/image9.jpeg',
+            description: req.body.description, // get video description from upload form
+            views: '0',
+            likes: '0',
+            duration: '3:22',
+            video: 'https://project-2-api.herokuapp.com/stream',
+            timestamp: Date.now(), // generate timestamp 
+            comments: []
+        }
+
+        videos.push(newVideo);
+
+        // convert videos dataset into a string and write it to the file  
+        fs.writeFileSync(
+            './data/videos.json',
+            JSON.stringify(videos)
+        )
+        
+        res.status(201).json(newVideo); // 201 HTTP created
     })
 
 module.exports = router;
