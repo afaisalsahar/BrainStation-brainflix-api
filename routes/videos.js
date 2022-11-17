@@ -18,7 +18,7 @@ function getVideos() {
     return JSON.parse(videosDB);
 }
 
-// express modular router to keep the api organized
+// modular router to handle videos GET/POST req
 router
     .route('/') // handle GET request to /videos
     .get((req, res) => {    
@@ -62,5 +62,27 @@ router
         
         res.status(201).json(newVideo); // 201 HTTP created
     })
+
+// modular router to handle featured video GET req
+router
+    .route('/:id') // handle GET req with ID param
+    .get((req, res) => {
+        const id = req.params.id; // store ID param from URL path
+
+        // search videos dataset to find one that mathces the ID param
+        const featuredVideo = getVideos().find(
+            video => video.id === id
+        )
+        
+        // if the ID does not match any video - send HTTP 404 with error message
+        if (!featuredVideo) {
+            return res.send(404, {
+                error: 'Video not found, invalid ID'
+            });
+        }
+
+        res.status(200).json(featuredVideo); // 200 HTTP OK
+})
+
 
 module.exports = router;
