@@ -1,6 +1,6 @@
 // load environment variables
 require('dotenv').config();
-const {PORT} = process.env;
+const { PORT } = process.env;
 
 // load api dependencies - server/middleware
 const express = require('express');
@@ -16,6 +16,6 @@ app.use(express.static('public')); // serve static files/images
 app.use('/videos', videos); // use video routes
 
 // start express server
-app.listen(PORT, ()=> {
+app.listen(PORT, () => {
     console.log("BrainFlex 🚀🚀🚀");
 });
