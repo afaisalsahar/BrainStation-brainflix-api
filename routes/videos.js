@@ -60,7 +60,7 @@ router
             JSON.stringify(videos)
         )
         
-        res.status(201).json(newVideo); // 201 HTTP created
+        return res.status(201).json(newVideo); // 201 HTTP created
     })
 
 // modular router to handle featured video GET req
@@ -74,14 +74,16 @@ router
             video => video.id === id
         )
         
-        // if the ID does not match any video - send HTTP 404 with error message
-        if (!featuredVideo) {
-            return res.send(404, {
-                error: 'Video not found, invalid ID'
-            });
+        if(featuredVideo) {
+            featuredVideo.image = `${API_URL}:${PORT}${featuredVideo.image}`;
+            return res.status(200).json(featuredVideo); // 200 HTTP OK
         }
-
-        res.status(200).json(featuredVideo); // 200 HTTP OK
+        
+        // if the ID does not match any video - send HTTP 404 with error message
+        return res.status(404).json({
+                error: 'Video not found, invalid ID'
+            }
+        );
 })
 
 
