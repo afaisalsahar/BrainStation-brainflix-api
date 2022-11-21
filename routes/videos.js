@@ -90,10 +90,12 @@ router
         );
     })
 
+// modular router to handle comment POST req
 router
-    .route('/:id/comments')
+    .route('/:id/comments') // handle req with video ID
     .post((_req, res) => {
-        const id = _req.params.id;
+        const id = _req.params.id; // store ID param from URL path
+        // create a new comment object - hardcode required fields
         const newComment = {
             id: uuid(),
             name: _req.body.name,
@@ -101,28 +103,33 @@ router
             likes: 0,
             timestamp: Date.now()
         }
-
+        
+        // read videos file - filter featured video - manipulate comments array
         const videos = getVideos().map(video => {
-            if (video.id === id) video.comments.unshift(newComment);
+            if (video.id === id) video.comments.unshift(newComment); // add new trailing comment
             return video;
         });
 
+        // convert videos dataset into a string and write it to the file  
         fs.writeFileSync(
             './data/videos.json',
             JSON.stringify(videos)
         )
 
         return res.status(201).json(
+            // return featured video comments
             getVideo(id).comments
         ); // 201 HTTP created
     });
 
+// modular router to handle comment DELETE req
 router
-    .route('/:videoId/comments/:commentId')
+    .route('/:videoId/comments/:commentId') // handle req with video ID and comment ID
     .delete((_req, res) => {
-        const videoId = _req.params.videoId;
-        const commentId = _req.params.commentId;
+        const videoId = _req.params.videoId; // store video ID param from URL path
+        const commentId = _req.params.commentId; // store comment ID param from URL path
 
+        // read videos file - filter featured video - filter comments - exclude comment that matches the ID
         const videos = getVideos().map(video => {
             if (video.id === videoId) {
                 video.comments = video.comments.filter(comment => {
@@ -132,12 +139,14 @@ router
             return video;
         });
 
+        // convert videos dataset into a string and write it to the file  
         fs.writeFileSync(
             './data/videos.json',
             JSON.stringify(videos)
         )
 
         return res.status(200).json(
+            // return featured video comments
             getVideo(videoId).comments
         ); // 200 HTTP OK
     })
